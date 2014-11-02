@@ -771,6 +771,16 @@ error1:
 		dev->halt = (void *)mvgbe_halt;
 		dev->send = (void *)mvgbe_send;
 		dev->recv = (void *)mvgbe_recv;
+		eth_getenv_enetaddr ("ethaddr", dev->enetaddr);
+		if (!is_valid_ether_addr(dev->enetaddr)) {
+#ifdef CONFIG_RANDOM_MACADDR
+			printf("Bad MAC address (no ethaddr in env?), randomizing\n");
+			eth_random_addr(dev->enetaddr);
+			printf("MAC: %pM\n", dev->enetaddr);
+#else
+			printf("WARNING: Bad MAC address (no ethaddr in env?)\n");
+#endif
+		}
 		dev->write_hwaddr = (void *)mvgbe_write_hwaddr;
 
 		eth_register(dev);
